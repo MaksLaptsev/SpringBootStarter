@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-session-table
+      author: Maks
+      changes:
+        - createTable:
+            tableName: session
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: login
+                  type: varchar(35)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: sessionopendate
+                  type: timestamp
+                  constraints:
+                    nullable: false

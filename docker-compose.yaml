@@ -1,0 +1,30 @@
+version: '3.3'
+
+services:
+  tenant_first:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: "sessionDB"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "admin"
+    ports:
+      - "5432:5432"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+  #
+  tenant_fours:
+    image: postgres:13.3
+    environment:
+          POSTGRES_DB: "personDB"
+          POSTGRES_USER: "admin"
+          POSTGRES_PASSWORD: "admin"
+    ports:
+      - "50008:5432"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
