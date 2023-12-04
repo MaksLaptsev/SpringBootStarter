@@ -1,0 +1,26 @@
+spring:
+  liquibase:
+    enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:50008/personDB
+    username: admin
+    password: admin
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+session:
+  check:
+    enable: true
+    default:
+      default-black-list:
+        - "RDN"
+        - "aaa"
+      default-login-black-list:
+        - ru.clevertec.starter.service.SessionBlackListDefault
+      url: http://localhost:8081/session
+
