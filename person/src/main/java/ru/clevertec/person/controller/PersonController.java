@@ -32,4 +32,10 @@ public class PersonController {
     public ResponseEntity<PersonResponse> save(@RequestBody PersonRequest request, Session session){
         return ResponseEntity.status(HttpStatus.CREATED).body(personService.save(request,session));
     }
+
+    @SessionCheck(blackList = {"Maks"})
+    @GetMapping("/byLogin")
+    public ResponseEntity<PersonResponse> getByLogin(@RequestBody PersonRequest request, Session session){
+        return ResponseEntity.status(HttpStatus.CREATED).body(personService.getByLogin(request,session));
+    }
 }

@@ -16,10 +16,27 @@ Content-Type: application/json
   "name": "Petya"
 }
 
+### Save person
+POST http://localhost:8080/person
+Content-Type: application/json
+
+{
+  "login": "maksru2009",
+  "name": "maks"
+}
+
 ### Get person by id
 GET http://localhost:8080/person/10
 Content-Type: application/json
 
 {
 "login": "www"
+}
+
+### Get person by login
+GET http://localhost:8080/person/byLogin
+Content-Type: application/json
+
+{
+  "login": "maksru2009"
 }
