@@ -4,12 +4,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.clevertec.person.exception.PersonException;
+import ru.clevertec.person.exception.PersonNotFoundException;
 import ru.clevertec.person.exception.dto.ExceptionResponse;
 import ru.clevertec.starter.exception.BlackListLogin;
 import ru.clevertec.starter.exception.ConnectionException;
 import ru.clevertec.starter.exception.InvalidLoginValue;
 import ru.clevertec.starter.exception.InvalidMethodParams;
+import java.sql.SQLException;
 
 @ControllerAdvice
 public class CustomExceptionHandler {
@@ -34,8 +35,13 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ExceptionResponse(exception.getMessage()));
     }
 
-    @ExceptionHandler(PersonException.class)
-    public ResponseEntity<?> handlerConnectionException(PersonException exception){
+    @ExceptionHandler(PersonNotFoundException.class)
+    public ResponseEntity<?> handlerConnectionException(PersonNotFoundException exception){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ExceptionResponse(exception.getMessage()));
+    }
+
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<?> handlerSQLException(SQLException exception){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ExceptionResponse(exception.getMessage()));
     }
 }

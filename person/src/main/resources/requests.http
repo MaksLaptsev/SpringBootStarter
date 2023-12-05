@@ -1,0 +1,25 @@
+### Save person. login in blacklist
+POST http://localhost:8080/person
+Content-Type: application/json
+
+{
+  "login": "login",
+  "name": "asd"
+}
+
+### Save person
+POST http://localhost:8080/person
+Content-Type: application/json
+
+{
+  "login": "petya5",
+  "name": "Petya"
+}
+
+### Get person by id
+GET http://localhost:8080/person/10
+Content-Type: application/json
+
+{
+"login": "www"
+}

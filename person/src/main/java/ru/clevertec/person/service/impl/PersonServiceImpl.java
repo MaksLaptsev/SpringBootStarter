@@ -5,13 +5,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.person.dto.PersonRequest;
 import ru.clevertec.person.dto.PersonResponse;
-import ru.clevertec.person.exception.PersonException;
+import ru.clevertec.person.exception.PersonNotFoundException;
 import ru.clevertec.person.mapper.PersonMapper;
 import ru.clevertec.person.model.Person;
 import ru.clevertec.person.repository.PersonRepository;
 import ru.clevertec.person.service.PersonService;
 import ru.clevertec.starter.model.Session;
-
 import java.util.Optional;
 
 @Service
@@ -30,30 +29,22 @@ public class PersonServiceImpl implements PersonService {
     public PersonResponse getById(long id, Session session) {
         return personRepository.findById(id)
                 .map(p->personMapper.toResponse(p,session))
-                .orElseThrow();
+                .orElseThrow(()->new PersonNotFoundException("Person with id: %s not found".formatted(id)));
     }
 
     @Override
     public PersonResponse getByLogin(PersonRequest request,Session session) {
         return personRepository.findByLogin(personMapper.fromRequest(request).getLogin())
                 .map(p->personMapper.toResponse(p,session))
-                .orElseThrow();
+                .orElseThrow(()->new PersonNotFoundException("Person with login: %s not found"
+                        .formatted(personMapper.fromRequest(request).getLogin())));
     }
 
     @Override
     public PersonResponse save(PersonRequest request,Session session) {
         Person person = personMapper.fromRequest(request);
-        checkPersonLogin(person);
         return Optional.of(personRepository.saveAndFlush(person))
                 .map(p->personMapper.toResponse(p,session))
                 .orElseThrow();
     }
-
-    private void checkPersonLogin(Person person){
-        if(personRepository.findByLogin(person.getLogin())
-                .isPresent()){
-            throw new PersonException("Key login=%s already exists.".formatted(person.getLogin()));
-        }
-    }
-
 }
