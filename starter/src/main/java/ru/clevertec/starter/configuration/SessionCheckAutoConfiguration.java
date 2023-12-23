@@ -1,6 +1,5 @@
 package ru.clevertec.starter.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -9,7 +8,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 import ru.clevertec.starter.bpp.SessionCheckBeanPostProcessor;
 import ru.clevertec.starter.properties.SessionCheckProperties;
 import ru.clevertec.starter.service.SessionBlackListDefault;
@@ -34,19 +32,12 @@ public class SessionCheckAutoConfiguration {
     }
 
     @Bean
-    public WebClient webClient(){
-        return WebClient.builder().build();
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
     }
 
     @Bean
-    public ObjectMapper objectMapper(){
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
-        return objectMapper;
-    }
-
-    @Bean
-    public SessionCheckService sessionCheckService(WebClient webClient,SessionCheckProperties properties,ObjectMapper objectMapper){
-        return new SessionCheckService(webClient, properties.getUrl(),objectMapper);
+    public SessionCheckService sessionCheckService(SessionCheckProperties properties,RestTemplate restTemplate){
+        return new SessionCheckService(properties.getUrl(),restTemplate);
     }
 }

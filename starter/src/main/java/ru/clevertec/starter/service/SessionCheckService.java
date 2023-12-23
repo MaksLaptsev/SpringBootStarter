@@ -1,39 +1,32 @@
 package ru.clevertec.starter.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
-import reactor.core.publisher.Mono;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
 import ru.clevertec.starter.exception.ConnectionException;
 import ru.clevertec.starter.model.Session;
 
 public class SessionCheckService {
-    private final WebClient webClient;
     private final String url;
-    private final ObjectMapper objectMapper;
+    private final RestTemplate restTemplate;
 
-    public SessionCheckService(WebClient webClient, String url,ObjectMapper objectMapper) {
-        this.webClient = webClient;
+    public SessionCheckService(String url, RestTemplate restTemplate) {
         this.url = url;
-        this.objectMapper = objectMapper;
+        this.restTemplate = restTemplate;
     }
 
-    @SneakyThrows
-    public Session findOrCreateAndGetByLogin(String login){
+    public Session findOrCreateAndGetByLogin(String login) {
         try {
-            String jsonResponse = webClient.post()
-                    .uri(url)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .body(Mono.just("{\"login\":\"%s\"}".formatted(login)),String.class)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-            return objectMapper.readValue(jsonResponse,Session.class);
-          }catch (WebClientRequestException e){
+            ResponseEntity<Session> response = restTemplate.exchange(url, HttpMethod.POST, request(login), Session.class);
+            return response.getBody();
+        } catch (ResourceAccessException e) {
             throw new ConnectionException("Connection denied: Session service is unavailable/check the URL in the application properties or try again later");
         }
+    }
+
+    private HttpEntity<Session> request(String login) {
+        return new HttpEntity<>(Session.builder().login(login).build());
     }
 }

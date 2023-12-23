@@ -1,11 +1,11 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'io.freefair.lombok' version '8.4'
+   id 'io.freefair.lombok' version '8.4'
 }
 
 group = 'ru.clevertec'
-version = '0.0.7'
+version = '0.0.8'
 
 java {
     sourceCompatibility = '17'

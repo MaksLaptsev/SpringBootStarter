@@ -11,6 +11,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SessionCheck {
     String[] blackList() default {};
+
     boolean includeDefaultBlackList() default true;
+
     Class<? extends SessionLogins>[] defaultBlackList() default {};
 }

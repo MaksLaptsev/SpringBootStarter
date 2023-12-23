@@ -14,7 +14,7 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 
 public class SessionCheckBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
-    private Map<String,Class<?>> beanNamesWithAnnotatedMethods = new HashMap<>();
+    private Map<String, Class<?>> beanNamesWithAnnotatedMethods = new HashMap<>();
     private BeanFactory beanFactory;
 
     @Override
@@ -27,8 +27,8 @@ public class SessionCheckBeanPostProcessor implements BeanPostProcessor, BeanFac
         Class<?> clazz = bean.getClass();
         boolean beanHasAnnotation = Arrays.stream(clazz.getMethods())
                 .anyMatch(method -> method.isAnnotationPresent(SessionCheck.class));
-        if (beanHasAnnotation){
-            beanNamesWithAnnotatedMethods.put(beanName,clazz);
+        if (beanHasAnnotation) {
+            beanNamesWithAnnotatedMethods.put(beanName, clazz);
         }
         return bean;
     }
@@ -40,12 +40,12 @@ public class SessionCheckBeanPostProcessor implements BeanPostProcessor, BeanFac
                 .orElse(bean);
     }
 
-    private Object getSessionCheckProxy(Object bean){
+    private Object getSessionCheckProxy(Object bean) {
         SessionCheckService sessionCheckService = beanFactory.getBean(SessionCheckService.class);
         SessionCheckProperties sessionCheckProperties = beanFactory.getBean(SessionCheckProperties.class);
-        Enhancer enhancer =new Enhancer();
+        Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(bean.getClass());
-        enhancer.setCallback(new SessionCheckInterceptor(bean,sessionCheckProperties,beanFactory,sessionCheckService));
+        enhancer.setCallback(new SessionCheckInterceptor(bean, sessionCheckProperties, beanFactory, sessionCheckService));
         return isPresentDefaultConstructor(bean)
                 ? enhancer.create()
                 : enhancer.create(getNotDefaultConstructorArgTypes(bean), getNotDefaultConstructorArgs(bean));

@@ -2,9 +2,9 @@ package ru.clevertec.starter.service;
 
 import java.util.Set;
 
-public class SessionBlackListDefault implements SessionLogins{
+public class SessionBlackListDefault implements SessionLogins {
     @Override
     public Set<String> getBlackList() {
-        return Set.of("Veles","login","black");
+        return Set.of("Veles", "login", "black");
     }
 }

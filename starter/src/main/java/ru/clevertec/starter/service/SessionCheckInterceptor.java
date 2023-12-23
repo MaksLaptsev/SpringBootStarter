@@ -10,6 +10,7 @@ import ru.clevertec.starter.exception.InvalidLoginValue;
 import ru.clevertec.starter.exception.InvalidMethodParams;
 import ru.clevertec.starter.model.Session;
 import ru.clevertec.starter.properties.SessionCheckProperties;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -25,26 +26,27 @@ public class SessionCheckInterceptor implements MethodInterceptor {
 
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        if(method.isAnnotationPresent(SessionCheck.class)){
+        if (method.isAnnotationPresent(SessionCheck.class)) {
             SessionCheck annotation = method.getAnnotation(SessionCheck.class);
             Set<String> finalBlackList = getFinalBlackList(annotation);
 
-            if (paramsIsHasSessionObj(args)){
+            if (paramsIsHasSessionObj(args)) {
                 Object[] updateArgs = Optional.of(args)
                         .map(this::checkHaveParamsObjectsFieldLogin)
                         .map(this::checkAndGetLoginIfNotEmpty)
-                        .map(login-> checkLoginInBlackList(login,finalBlackList))
-                        .map(login-> getArgsWithUpdateSessionObject(args,login))
+                        .map(login -> checkLoginInBlackList(login, finalBlackList))
+                        .map(login -> getArgsWithUpdateSessionObject(args, login))
                         .get();
-                return method.invoke(originalBean,updateArgs);
-            }else throw new InvalidMethodParams("The session object is missing from the method: %s!".formatted(method.getName()));
+                return method.invoke(originalBean, updateArgs);
+            } else
+                throw new InvalidMethodParams("The session object is missing from the method: %s!".formatted(method.getName()));
         }
-        return method.invoke(originalBean,args);
+        return method.invoke(originalBean, args);
     }
 
-    private Set<String> getFinalBlackList(SessionCheck annotation){
+    private Set<String> getFinalBlackList(SessionCheck annotation) {
         Set<String> finalBlackList = Arrays.stream(annotation.blackList()).collect(Collectors.toSet());
-        if (annotation.includeDefaultBlackList()){
+        if (annotation.includeDefaultBlackList()) {
             finalBlackList.addAll(sessionCheckProperties.getDefaultLoginBlackList().stream()
                     .map(beanFactory::getBean)
                     .map(SessionLogins::getBlackList)
@@ -60,65 +62,65 @@ public class SessionCheckInterceptor implements MethodInterceptor {
         return finalBlackList;
     }
 
-    private boolean paramsIsHasSessionObj(Object[] args){
+    private boolean paramsIsHasSessionObj(Object[] args) {
         return Arrays.stream(args).anyMatch(Session.class::isInstance);
     }
 
-    private Object[] checkHaveParamsObjectsFieldLogin(Object[] args){
+    private Object[] checkHaveParamsObjectsFieldLogin(Object[] args) {
         long objWithFieldLogin = Arrays.stream(args)
                 .filter(object -> !(object instanceof Session))
-                .filter(object-> Arrays.stream(object.getClass().getDeclaredFields())
+                .filter(object -> Arrays.stream(object.getClass().getDeclaredFields())
                         .anyMatch(field -> field.getName().equals("login")))
                 .count();
-        if (objWithFieldLogin == 0 || objWithFieldLogin > 1){
+        if (objWithFieldLogin == 0 || objWithFieldLogin > 1) {
             throw new InvalidMethodParams("In method params more 1 or zero objects with field 'login'!");
-        }else return args;
+        } else return args;
     }
 
 
-    private String checkAndGetLoginIfNotEmpty(Object[] args){
+    private String checkAndGetLoginIfNotEmpty(Object[] args) {
         return Arrays.stream(args)
-                .filter(object->!(object instanceof Session))
-                .filter(object-> Arrays.stream(object.getClass().getDeclaredFields()).anyMatch(field -> field.getName().equals("login")))
+                .filter(object -> !(object instanceof Session))
+                .filter(object -> Arrays.stream(object.getClass().getDeclaredFields()).anyMatch(field -> field.getName().equals("login")))
                 .map(this::getLoginValue)
                 .filter(Objects::nonNull)
-                .filter(x->!x.isEmpty())
+                .filter(x -> !x.isEmpty())
                 .findFirst()
-                .orElseThrow(()-> new InvalidLoginValue("Login is empty or null!"));
+                .orElseThrow(() -> new InvalidLoginValue("Login is empty or null!"));
     }
 
     private String getLoginValue(Object o) {
         Method method;
-        try{
-            if (o.getClass().isRecord()){
+        try {
+            if (o.getClass().isRecord()) {
                 method = o.getClass().getDeclaredMethod("login");
-            }else {
+            } else {
                 method = o.getClass().getDeclaredMethod("getLogin");
             }
-        }catch (NoSuchMethodException e){
+        } catch (NoSuchMethodException e) {
             throw new InvalidLoginValue("Object: %s with field 'login' doesn't have getter!".formatted(o.getClass()));
         }
         method.setAccessible(true);
-        try{
+        try {
             String login = (String) method.invoke(o);
             return login;
-        }catch (InvocationTargetException | IllegalAccessException e){
+        } catch (InvocationTargetException | IllegalAccessException e) {
             throw new InvalidLoginValue("");
         }
     }
 
-    private String checkLoginInBlackList(String login, Set<String> blackList){
-        if (blackList.contains(login)){
+    private String checkLoginInBlackList(String login, Set<String> blackList) {
+        if (blackList.contains(login)) {
             throw new BlackListLogin("Login %s in black list".formatted(login));
-        }else return login;
+        } else return login;
     }
 
-    private Object[] getArgsWithUpdateSessionObject(Object[] args, String login){
-       return Arrays.stream(args)
-                .map(object->{
-                    if (object instanceof Session){
+    private Object[] getArgsWithUpdateSessionObject(Object[] args, String login) {
+        return Arrays.stream(args)
+                .map(object -> {
+                    if (object instanceof Session) {
                         return sessionCheckService.findOrCreateAndGetByLogin(login);
-                    }else return object;
+                    } else return object;
                 })
                 .toArray();
     }
