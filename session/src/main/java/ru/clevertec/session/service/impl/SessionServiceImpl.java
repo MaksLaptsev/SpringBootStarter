@@ -9,6 +9,7 @@ import ru.clevertec.session.dto.SessionResponse;
 import ru.clevertec.session.mapper.SessionMapper;
 import ru.clevertec.session.repository.SessionRepository;
 import ru.clevertec.session.service.SessionService;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public class SessionServiceImpl implements SessionService {
     private final SessionMapper sessionMapper;
 
     @Autowired
-    public SessionServiceImpl(SessionRepository sessionRepository,SessionMapper sessionMapper) {
+    public SessionServiceImpl(SessionRepository sessionRepository, SessionMapper sessionMapper) {
         this.sessionRepository = sessionRepository;
         this.sessionMapper = sessionMapper;
     }
@@ -28,7 +29,7 @@ public class SessionServiceImpl implements SessionService {
     public SessionResponse getOrCreateAndGetSession(SessionRequest request) {
         return sessionRepository.findByLogin(sessionMapper.fromRequest(request).getLogin())
                 .map(sessionMapper::toResponse)
-                .orElseGet(()-> Optional.of(sessionRepository.saveAndFlush(sessionMapper.fromRequest(request)))
+                .orElseGet(() -> Optional.of(sessionRepository.saveAndFlush(sessionMapper.fromRequest(request)))
                         .map(sessionMapper::toResponse)
                         .orElseThrow());
     }

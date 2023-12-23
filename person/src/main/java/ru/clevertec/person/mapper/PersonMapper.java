@@ -8,12 +8,13 @@ import ru.clevertec.person.dto.PersonResponse;
 import ru.clevertec.person.model.Person;
 import ru.clevertec.starter.model.Session;
 
-@Mapper(componentModel = "spring",unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PersonMapper {
-    @Mapping(target = "session",source = "session")
-    @Mapping(target = "id",source = "person.id")
-    @Mapping(target = "login",source = "person.login")
-    @Mapping(target = "name",source = "person.name")
+    @Mapping(target = "session", source = "session")
+    @Mapping(target = "id", source = "person.id")
+    @Mapping(target = "login", source = "person.login")
+    @Mapping(target = "name", source = "person.name")
     PersonResponse toResponse(Person person, Session session);
+
     Person fromRequest(PersonRequest request);
 }

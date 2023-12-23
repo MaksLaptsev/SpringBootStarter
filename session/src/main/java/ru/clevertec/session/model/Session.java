@@ -3,6 +3,7 @@ package ru.clevertec.session.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import ru.clevertec.session.model.entityListener.SessionListener;
+
 import java.time.LocalDateTime;
 
 @Data

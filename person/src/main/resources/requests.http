@@ -26,7 +26,7 @@ Content-Type: application/json
 }
 
 ### Get person by id
-GET http://localhost:8080/person/10
+GET http://localhost:8080/person/1
 Content-Type: application/json
 
 {

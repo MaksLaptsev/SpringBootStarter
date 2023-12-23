@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'ru.clevertec:starter:0.0.7'
+    implementation 'ru.clevertec:starter:0.0.8'
     implementation 'org.liquibase:liquibase-core'
     implementation "org.mapstruct:mapstruct:$mapstructVersion"
 

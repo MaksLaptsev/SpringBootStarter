@@ -22,7 +22,7 @@ public class SessionController {
     }
 
     @PostMapping
-    public ResponseEntity<SessionResponse> getOrCreateAndGetSession(@RequestBody SessionRequest request){
+    public ResponseEntity<SessionResponse> getOrCreateAndGetSession(@RequestBody SessionRequest request) {
         return ResponseEntity.status(HttpStatus.OK).body(sessionService.getOrCreateAndGetSession(request));
     }
 }
